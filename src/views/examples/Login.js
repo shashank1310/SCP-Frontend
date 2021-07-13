@@ -32,30 +32,33 @@ import {
   Row,
   Col,
 } from "reactstrap";
+import { useSnackbar } from "notistack";
 import { useDispatch } from "react-redux";
-import { login } from "../../actions/userActions";
-import { LOGIN } from "../../utils/requests";
+import { useHistory } from "react-router";
+import { LOGIN, getAppState } from "../../utils/requests";
 import { compose } from "redux";
 
 const Login = () => {
+  const dispatch = useDispatch();
+  const history = useHistory();
+  const { enqueueSnackbar } = useSnackbar();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
   const onLogin = async (e) => {
     if (e) e.preventDefault();
     try {
-      //dummy API(update this for sending credentials to backend)
-      // const data = await LOGIN("users", username, password);
-      const data = { username: username };
-
-      // storing username in redux-store
-      dispatch(login(data.username));
+      await LOGIN(username, password);
+      const data = await getAppState();
+      dispatch(LOGIN(data));
+      history.push("/");
     } catch (err) {
-      console.log("Error while logging in!");
+      enqueueSnackbar("An error occured while logging in.", {
+        variant: "error",
+      });
     }
   };
-
-  const dispatch = useDispatch();
+  
+  
   return (
     <>
       <Col lg="5" md="7">
@@ -64,7 +67,7 @@ const Login = () => {
             <p className="text-lead text-muted text-center">
               Sign in to start your session!
             </p>
-            <Form role="form">
+            <Form role="form" className={classes.form} noValidate onSubmit={onLogin}>
               <FormGroup className="mb-3">
                 <InputGroup className="input-group-alternative">
                   <InputGroupAddon addonType="prepend">

@@ -56,7 +56,7 @@ const Register=()=> {
   
   const onRegister = async (e)=> {
    
-    if(emailError==="valid email"&& password==confirmPassword){
+    if(emailError==="valid email"&& password===confirmPassword){
       if (e) e.preventDefault();
     try{
       const user ={
